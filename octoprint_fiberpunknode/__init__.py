@@ -33,10 +33,13 @@ class FiberpunknodePlugin(octoprint.plugin.SettingsPlugin,
                     return
                 self._logger.info("Sending file")
                 files = {'data': (remote_name, open(path, 'rb').read(), "application/octet-stream")}
-                response = requests.post(upload_url, files=files)
+                response = requests.post(upload_url, files=files, timeout=180)
                 toc = time.perf_counter()
                 if response.status_code == 200:
                     self._logger.info("File upload success")
+                    if self._settings.get_boolean(["delete_after_transfer"]):
+                        self._logger.info("Deleting file {} after transfer".format(filename))
+                        self._file_manager.remove_file("local", filename)
                     sd_upload_succeeded(filename, remote_name, toc-tic)
                 else:
                     self._logger.info("File upload failure")
@@ -56,13 +59,15 @@ class FiberpunknodePlugin(octoprint.plugin.SettingsPlugin,
 
     def get_settings_defaults(self):
         return {
-            "node_url": ""
+            "node_url": "",
+            "delete_after_transfer": False
         }
 
     # ~~ AssetPlugin mixin
 
     def get_assets(self):
         return {
+            "css": ["css/fiberpunknode.css"],
             "js": ["js/fiberpunknode.js"]
         }
 
