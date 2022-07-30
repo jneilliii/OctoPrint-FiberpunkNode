@@ -55,6 +55,11 @@ class FiberpunknodePlugin(octoprint.plugin.SettingsPlugin,
 
         return remote_name
 
+    # ~~ GCode Sending Hook
+
+    def send_gcode(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
+        return "&&{}".format(cmd),
+
     # ~~ SettingsPlugin mixin
 
     def get_settings_defaults(self):
@@ -98,5 +103,6 @@ def __plugin_load__():
     global __plugin_hooks__
     __plugin_hooks__ = {
         "octoprint.printer.sdcardupload": __plugin_implementation__.nop_upload_to_sd,
-        "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information
+        "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information,
+        "octoprint.comm.protocol.gcode.sending": __plugin_implementation__.send_gcode
     }
