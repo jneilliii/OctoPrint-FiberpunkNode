@@ -60,6 +60,14 @@ class FiberpunknodePlugin(octoprint.plugin.SettingsPlugin,
     def send_gcode(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
         return "&&{}".format(cmd),
 
+    # ~~ GCode Received Hook
+
+    def receive_gcode(comm, line, *args, **kwargs):
+        if line.startswith("\xff\x08"):
+            return ""
+        else:
+            return line
+
     # ~~ SettingsPlugin mixin
 
     def get_settings_defaults(self):
@@ -104,5 +112,6 @@ def __plugin_load__():
     __plugin_hooks__ = {
         "octoprint.printer.sdcardupload": __plugin_implementation__.nop_upload_to_sd,
         "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information,
-        "octoprint.comm.protocol.gcode.sending": __plugin_implementation__.send_gcode
+        "octoprint.comm.protocol.gcode.sending": __plugin_implementation__.send_gcode,
+        "octoprint.comm.protocol.gcode.": __plugin_implementation__.receive_gcode
     }
