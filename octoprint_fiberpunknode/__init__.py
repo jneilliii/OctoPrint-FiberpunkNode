@@ -63,7 +63,7 @@ class FiberpunknodePlugin(octoprint.plugin.SettingsPlugin,
     # ~~ GCode Received Hook
 
     def receive_gcode(comm, line, *args, **kwargs):
-        if line.startswith("\xff\x08"):
+        if line.startswith("\xff") or line.startswith("Çý"):
             return ""
         else:
             return line
